@@ -1,10 +1,15 @@
 import telebot
+import json
 import pushbullet
 # import img_analysis
-bot = telebot.TeleBot('5274258108:AAHTFGSISX6XQ_K5AZU5lg7s0_BZFqEXZwI')
-API_KEY = "o.vFmaJ46t3msllT0UPbjlyjAckdKIV6fV"
+jfile = json.load(open('credentials.json'))
+bot = telebot.TeleBot(jfile['telegram_api'])
+API_KEY = jfile ['pushbullet_api']
 pb = pushbullet.Pushbullet(API_KEY)
-DICTIONNARY = ['monitor', 'lautsprecher', 'möbel', 'kamera', 'apparat', 'stereo']
+DICTIONNARY = [
+'monitor', 'lautsprecher', 'möbel', 'kamera', 'apparat', 'stereo', 'handy',
+'iphone', 'android', 'smartphone', 'kopfhörer'
+]
 # img_analysis.IMG_ANALSIS
 
 @bot.message_handler(content_types=['text'])
