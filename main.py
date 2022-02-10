@@ -1,18 +1,21 @@
 import telebot
 import json
-import pushbullet
-
+from img_analysis import A
 
 # import img_analysis
 jfile = json.load(open('credentials.json'))
 bot = telebot.TeleBot(jfile['telegram_api'])
 API_KEY = jfile ['pushbullet_api']
-pb = pushbullet.Pushbullet(API_KEY)
 DICTIONNARY = [
 'monitor', 'lautsprecher', 'möbel', 'kamera', 'apparat', 'stereo', 'handy',
-'iphone', 'android', 'smartphone', 'kopfhörer', 'airpods'
+'iphone', 'android', 'smartphone', 'kopfhörer', 'airpods', 'maschine', 'laptop','mac'
 ]
-CHAT_ID = 1652569925
+DICTIONNARY_img_recog = [
+'monitor', 'speaker', 'furniture', 'camera', 'machine', 'stereo', 'smartphone',
+'iphone', 'android', 'phone', 'headset', 'airpods', 'laptop','mac','computer',
+'device', 'output', 'gadget', 'peripheral', 'electronic'
+]
+CHAT_ID = jfile['chat_id']
 
 
 
@@ -26,7 +29,8 @@ def text(message):
 @bot.message_handler(content_types=['photo'])
 def photo(message):
     cap = message.caption
-    print("photo "+cap+ message.text)
+  
+    # print("photo "+cap+ message.text)
     if cap != "":
         for txt in DICTIONNARY:
             if (txt in str(cap).lower()):
@@ -37,6 +41,11 @@ def photo(message):
     with open("image.jpg", 'wb') as new_file:
         new_file.write(downloaded_file)
     print("downloaded img")
+    labels = A.detect_labels("image.jpg")
+    for label in labels:
+        for w in label.description.lower().split():
+            if(w in DICTIONNARY_img_recog):
+                bot.send_message(CHAT_ID, label.description+": "+str(label.score*100))
     
 bot.infinity_polling()
 
