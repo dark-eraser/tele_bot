@@ -1,8 +1,7 @@
 import telebot
 import json
 import pushbullet
-# from imap_tools import MailBox
-from smtplib import SMTP_SSL, SMTP_SSL_PORT
+
 
 # import img_analysis
 jfile = json.load(open('credentials.json'))
@@ -19,7 +18,6 @@ CHAT_ID = 1652569925
 
 @bot.message_handler(content_types=['text'])
 def text(message):
-    # print(message.chat.id)
     for txt in DICTIONNARY:
         if ((txt in message.text.lower())& ('suche' not in message.text.lower())):
             print(message.text)
@@ -28,11 +26,11 @@ def text(message):
 @bot.message_handler(content_types=['photo'])
 def photo(message):
     cap = message.caption
-    print("photo "+cap)
+    print("photo "+cap+ message.text)
     if cap != "":
         for txt in DICTIONNARY:
             if (txt in str(cap).lower()):
-                bot.send_message(CHAT_ID, cap)
+                bot.send_message(CHAT_ID, cap+message.text)
     fileID = message.photo[-1].file_id
     file_info = bot.get_file(fileID)
     downloaded_file = bot.download_file(file_info.file_path)
